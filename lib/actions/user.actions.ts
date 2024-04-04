@@ -1,24 +1,25 @@
-'user server'
+"use server";
+
 import { revalidatePath } from "next/cache";
 
 import User from "../database/models/user.model";
 import { connectToDatabase } from "../database/mongoose";
 import { handleError } from "../utils";
 
-// Create
-
+// CREATE
 export async function createUser(user: CreateUserParams) {
 	try {
-		await connectToDatabase()
+		await connectToDatabase();
 
-		const newUser = await User.create(user)
+		const newUser = await User.create(user);
 
-		return JSON.parse(JSON.stringify(newUser))
-	} catch (err) {
-		handleError(err)
+		return JSON.parse(JSON.stringify(newUser));
+	} catch (error) {
+		handleError(error);
 	}
 }
-// Read
+
+// READ
 export async function getUserById(userId: string) {
 	try {
 		await connectToDatabase();
@@ -33,8 +34,7 @@ export async function getUserById(userId: string) {
 	}
 }
 
-// Update
-
+// UPDATE
 export async function updateUser(clerkId: string, user: UpdateUserParams) {
 	try {
 		await connectToDatabase();
@@ -49,11 +49,9 @@ export async function updateUser(clerkId: string, user: UpdateUserParams) {
 	} catch (error) {
 		handleError(error);
 	}
-
-
 }
 
-// Delete 
+// DELETE
 export async function deleteUser(clerkId: string) {
 	try {
 		await connectToDatabase();
@@ -75,7 +73,7 @@ export async function deleteUser(clerkId: string) {
 	}
 }
 
-// Use credits
+// USE CREDITS
 export async function updateCredits(userId: string, creditFee: number) {
 	try {
 		await connectToDatabase();
