@@ -1,5 +1,5 @@
 import { Document, Schema, model, models, Types } from 'mongoose';
-import { IUser } from './user.model'; // Предполагая, что вы уже определили интерфейс IUser
+import { IUser } from './user.model'; 
 
 
 export interface ITransaction extends Document {
