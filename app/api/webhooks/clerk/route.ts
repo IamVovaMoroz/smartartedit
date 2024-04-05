@@ -59,8 +59,9 @@ export async function POST(req: Request) {
 
 	// === Create ===
 	if (eventType === "user.created") {
+		// after that new user was created in Clerk we save everything to evt.data
 		const { id, email_addresses, image_url, first_name, last_name, username } = evt.data;
-
+		// than we add(save) that to object user
 		const user = {
 			clerkId: id,
 			email: email_addresses[0].email_address,
@@ -69,7 +70,7 @@ export async function POST(req: Request) {
 			lastName: last_name,
 			photo: image_url,
 		};
-
+		// we can create newUser with createUser and data from const user
 		const newUser = await createUser(user);
 
 		// Set public metadata
