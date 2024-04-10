@@ -59,8 +59,10 @@ export async function POST(req: Request) {
 
 	// === Create ===
 	if (eventType === "user.created") {
+		console.log("Received user created event with data:", evt.data);
 		// after that new user was created in Clerk we save everything to evt.data
 		const { id, email_addresses, image_url, first_name, last_name, username } = evt.data;
+
 		// than we add(save) that to object user
 		const user = {
 			clerkId: id,
