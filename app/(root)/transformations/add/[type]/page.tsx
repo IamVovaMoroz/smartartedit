@@ -19,3 +19,4 @@ const AddTransformationTypePage = ({ params: { type } }: SearchParamProps) => {
 }
 
 export default AddTransformationTypePage
+// -----------------
