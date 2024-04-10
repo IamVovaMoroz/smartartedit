@@ -33,3 +33,4 @@ const AddTransformationTypePage = async ({ params: { type } }: SearchParamProps)
 }
 
 export default AddTransformationTypePage
+// -----------------
