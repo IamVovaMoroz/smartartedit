@@ -25,10 +25,10 @@ export const connectToDatabase = async () => {
 		cached.promise ||
 		mongoose.connect(
 			MONGODB_URL, {
-			dbName: "smartartedit", bufferCommands: false
+			dbName: "imagecreater", bufferCommands: false
 		}
 		)
 	cached.conn = await cached.promise;
 
 	return cached.conn;
-}
+}git 
