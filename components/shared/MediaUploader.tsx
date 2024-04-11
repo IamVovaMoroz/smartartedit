@@ -35,8 +35,8 @@ const MediaUploader = ({
 		onValueChange(result?.info?.public_id)
 
 		toast({
-			title: 'Image uploaded successfully',
-			description: '1 credit was deducted from your account',
+			title: 'Image Successfully Added',
+			description: '1 Credit Deducted',
 			duration: 5000,
 			className: 'success-toast'
 		})
@@ -53,7 +53,8 @@ const MediaUploader = ({
 
 	return (
 		<CldUploadWidget
-			uploadPreset="jsm_imaginify"
+			// name of the project in Cloudinary upload - jsm_smartartedit
+			uploadPreset="jsm_smartartedit"
 			options={{
 				multiple: false,
 				resourceType: "image",
