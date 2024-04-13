@@ -34,6 +34,7 @@ import { getCldImageUrl } from "next-cloudinary"
 import { addImage, updateImage } from "@/lib/actions/image.actions"
 import { useRouter } from "next/navigation"
 import { InsufficientCreditsModal } from "./InsufficientCreditsModal"
+// Define form schema using Zod for validation
 
 export const formSchema = z.object({
   title: z.string(),
@@ -42,9 +43,10 @@ export const formSchema = z.object({
   prompt: z.string().optional(),
   publicId: z.string(),
 })
-
 const TransformationForm = ({ action, data = null, userId, type, creditBalance, config = null }: TransformationFormProps) => {
+  // Extract transformation type based on provided type
   const transformationType = transformationTypes[type];
+  // States for managing form and transformation
   const [image, setImage] = useState(data)
   const [newTransformation, setNewTransformation] = useState<Transformations | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,7 +54,7 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
   const [transformationConfig, setTransformationConfig] = useState(config)
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
-
+  // Define initial form values based on provided data
   const initialValues = data && action === 'Update' ? {
     title: data?.title,
     aspectRatio: data?.aspectRatio,
@@ -60,17 +62,17 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
     prompt: data?.prompt,
     publicId: data?.publicId,
   } : defaultValues
-
-  // 1. Define your form.
+  // Initialize form using react-hook-form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialValues,
   })
 
-  // 2. Define a submit handler.
+  // Submit handler for the form
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
-
+    // Prepare image data and transformation URL
     if (data || image) {
       const transformationUrl = getCldImageUrl({
         width: image?.width,
@@ -92,15 +94,17 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
         prompt: values.prompt,
         color: values.color,
       }
+      // If action is to add a new transformation
 
       if (action === 'Add') {
         try {
+          // Add the image with provided data
           const newImage = await addImage({
             image: imageData,
             userId,
             path: '/'
           })
-
+          // If image added successfully, reset form and navigate to the new image page
           if (newImage) {
             form.reset()
             setImage(data)
@@ -110,9 +114,10 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
           console.log(error);
         }
       }
-
+      // If action is to update an existing transformation
       if (action === 'Update') {
         try {
+          // Update the image with new data
           const updatedImage = await updateImage({
             image: {
               ...imageData,
@@ -121,7 +126,7 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
             userId,
             path: `/transformations/${data._id}`
           })
-
+          // If image updated successfully, navigate to the updated image page
           if (updatedImage) {
             router.push(`/transformations/${updatedImage._id}`)
           }
@@ -130,27 +135,28 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
         }
       }
     }
-
+    // Reset submitting state after form submission
     setIsSubmitting(false)
   }
-
+  // Handler for selecting aspect ratio
   const onSelectFieldHandler = (value: string, onChangeField: (value: string) => void) => {
     const imageSize = aspectRatioOptions[value as AspectRatioKey]
-
+    // Update image state with selected aspect ratio
     setImage((prevState: any) => ({
       ...prevState,
       aspectRatio: imageSize.aspectRatio,
       width: imageSize.width,
       height: imageSize.height,
     }))
-
+    // Update transformation state
     setNewTransformation(transformationType.config);
 
     return onChangeField(value)
   }
-
+  // Handler for input change
   const onInputChangeHandler = (fieldName: string, value: string, type: string, onChangeField: (value: string) => void) => {
     debounce(() => {
+      // Update new transformation state based on input change
       setNewTransformation((prevState: any) => ({
         ...prevState,
         [type]: {
@@ -162,30 +168,32 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
 
     return onChangeField(value)
   }
-
+  // Handler for transformation action
   const onTransformHandler = async () => {
     setIsTransforming(true)
 
     setTransformationConfig(
       deepMergeObjects(newTransformation, transformationConfig)
     )
-
+    // Merge new transformation config with existing config
     setNewTransformation(null)
-
+    // Start transition and update user credits, creditFee "- 1"
     startTransition(async () => {
       await updateCredits(userId, creditFee)
     })
   }
-
+  // Effect hook to update new transformation when image or transformation type changes, if something changed in image or type or transformationType.config
+  // [image, transformationType.config, type]
   useEffect(() => {
     if (image && (type === 'restore' || type === 'removeBackground')) {
       setNewTransformation(transformationType.config)
     }
   }, [image, transformationType.config, type])
-
+  // Return the form component
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        {/* if there are not enough credits we show a message */}
         {creditBalance < Math.abs(creditFee) && <InsufficientCreditsModal />}
         <CustomField
           control={form.control}

@@ -1,15 +1,16 @@
 "use client"
 
 import { dataUrl, debounce, download, getImageSize } from '@/lib/utils'
-import { CldImage, getCldImageUrl } from 'next-cloudinary'
-import { PlaceholderValue } from 'next/dist/shared/lib/get-img-props'
+import { CldImage, getCldImageUrl } from 'next-cloudinary' // Importing Cloudinary components and functions
+import { PlaceholderValue } from 'next/dist/shared/lib/get-img-props'  // Importing placeholder value
 import Image from 'next/image'
 import React from 'react'
 
 const TransformedImage = ({ image, type, title, transformationConfig, isTransforming, setIsTransforming, hasDownload = false }: TransformedImageProps) => {
+	// Function to handle download button click event
 	const downloadHandler = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		e.preventDefault();
-
+		// Download the transformed image
 		download(getCldImageUrl({
 			width: image?.width,
 			height: image?.height,
@@ -24,6 +25,7 @@ const TransformedImage = ({ image, type, title, transformationConfig, isTransfor
 				<h3 className="h3-bold text-dark-600">
 					Transformed
 				</h3>
+				{/* Download button if hasDownload prop is true */}
 
 				{hasDownload && (
 					<button
@@ -40,7 +42,7 @@ const TransformedImage = ({ image, type, title, transformationConfig, isTransfor
 					</button>
 				)}
 			</div>
-
+			{/* Check if image and transformationConfig are available */}
 			{image?.publicId && transformationConfig ? (
 				<div className="relative">
 					<CldImage
@@ -54,6 +56,8 @@ const TransformedImage = ({ image, type, title, transformationConfig, isTransfor
 						onLoad={() => {
 							setIsTransforming && setIsTransforming(false);
 						}}
+						// Event handler when image load fails
+
 						onError={() => {
 							debounce(() => {
 								setIsTransforming && setIsTransforming(false);
@@ -61,7 +65,7 @@ const TransformedImage = ({ image, type, title, transformationConfig, isTransfor
 						}}
 						{...transformationConfig}
 					/>
-
+					{/* Show loading spinner if isTransforming is true */}
 					{isTransforming && (
 						<div className="transforming-loader">
 							<Image
